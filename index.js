@@ -17,6 +17,9 @@ app.get('/users',(req,res)=>{
 });
 //Rest_api
 app.get('/api/users',(req,res)=>{
+    //Hearder creation syntax: res.setHeader(name,value)
+    res.setHeader('X-custom-header','my custom header');
+    console.log(req.headers);
     res.json(users);
 });
 
