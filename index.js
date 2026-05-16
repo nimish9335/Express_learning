@@ -20,16 +20,19 @@ app.get('/api/users',(req,res)=>{
     //Hearder creation syntax: res.setHeader(name,value)
     res.setHeader('X-custom-header','my custom header');
     console.log(req.headers);
-    res.json(users);
+    res.status(200).json(users);
 });
 
 app.get('/api/users/:id',(req,res)=>{
     const id=Number(req.params.id);
     const user=users.find((u)=>u.id===id);
+    if(!id){
+        return res.status(400).send('Invalid user id');
+    }
     if(!user){
         return res.status(404).send('User not found');
     }
-    return res.json(user);
+    return res.status(200).json(user);
 });
 
 //middleware
@@ -49,11 +52,15 @@ app.post('/api/users', (req, res) => {
         const id = users.length > 0 ? users[users.length - 1].id + 1 : 1;
         user.id = id;
 
+        if(!user.first_name || !user.last_name || !user.email || !user.gender || !user.job_title){
+            return res.status(400).send('Missing required fields');
+        }
+
         users.push(user);
 
         fs.writeFileSync('./RawData.json', JSON.stringify(users, null, 2));
 
-        res.json(user);
+        res.status(200).json(user);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
